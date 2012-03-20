@@ -4,18 +4,19 @@
     <meta charset="UTF-8">
     <title>Virality</title>
     <style type="text/css">
-    #social-graph {
-        width: 400px;
-        height: 400px;
-        border: 1px solid #DDD;
+    body {
+        background-color: white;
     }
     </style>
 </head>
 <body>
-    <div id="social-graph"></div>
+    <canvas id="social-graph" width="800" height="600"></canvas>
 
-
-    <script type="text/javascript" src="js/jit/jit.js"></script>
+    <script src="js/jquery.min.js"></script>
+    <script src="js/arbor/arbor.js"></script>
+    <script src="js/arbor/arbor-tween.js"></script>
+    <script language="javascript" type="text/javascript" src="js/arbor/_/graphics.js" ></script>
+    <script language="javascript" type="text/javascript" src="js/arbor/_/renderer.js" ></script>
     <script type="text/javascript" src="js/virality.js"></script>
 </body>
 </html>

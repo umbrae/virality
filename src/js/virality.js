@@ -1,4 +1,4 @@
-var NUM_USERS = 500,
+var NUM_USERS = 100,
     MIN_CONNECTIONS = 1,
     MAX_CONNECTIONS = NUM_USERS * 0.1;
 
@@ -14,577 +14,118 @@ function powerlaw(min, max, n) {
     return (max-1-parseInt(pl))+min
 }
 
-/**
- * Set up our social graph, which should show a power law distribution
- * in terms of # of connections per user.
- */
-var users = [];
-for(var i=0; i < NUM_USERS; i++) {
-    r=powerlaw(MIN_CONNECTIONS, MAX_CONNECTIONS, 2)
-    users.push(r);
+function randRange(min, max) {
+    return Math.round(min+(Math.random()*(max-min)));
 }
 
+(function($){
+    var DeadSimpleRenderer = function(canvas){
+      var canvas = $(canvas).get(0)
+      var ctx = canvas.getContext("2d");
+      var particleSystem = null
 
+      var that = {
+        //
+        // the particle system will call the init function once, right before the
+        // first frame is to be drawn. it's a good place to set up the canvas and
+        // to pass the canvas size to the particle system
+        //
+        init:function(system){
+          // save a reference to the particle system for use in the .redraw() loop
+          particleSystem = system
 
+          // inform the system of the screen dimensions so it can map coords for us.
+          // if the canvas is ever resized, screenSize should be called again with
+          // the new dimensions
+          particleSystem.screenSize(canvas.width, canvas.height) 
+          particleSystem.screenPadding(20) // leave an extra 80px of whitespace per side
+        },
 
-var labelType, useGradients, nativeTextSupport, animate;
+        // 
+        // redraw will be called repeatedly during the run whenever the node positions
+        // change. the new positions for the nodes can be accessed by looking at the
+        // .p attribute of a given node. however the p.x & p.y values are in the coordinates
+        // of the particle system rather than the screen. you can either map them to
+        // the screen yourself, or use the convenience iterators .eachNode (and .eachEdge)
+        // which allow you to step through the actual node objects but also pass an
+        // x,y point in the screen's coordinate system
+        // 
 
-(function() {
-  var ua = navigator.userAgent,
-      iStuff = ua.match(/iPhone/i) || ua.match(/iPad/i),
-      typeOfCanvas = typeof HTMLCanvasElement,
-      nativeCanvasSupport = (typeOfCanvas == 'object' || typeOfCanvas == 'function'),
-      textSupport = nativeCanvasSupport 
-        && (typeof document.createElement('canvas').getContext('2d').fillText == 'function');
-  //I'm setting this based on the fact that ExCanvas provides text support for IE
-  //and that as of today iPhone/iPad current text support is lame
-  labelType = (!nativeCanvasSupport || (textSupport && !iStuff))? 'Native' : 'HTML';
-  nativeTextSupport = labelType == 'Native';
-  useGradients = nativeCanvasSupport;
-  animate = !(iStuff || !nativeCanvasSupport);
-})();
+        redraw:function(){
+          ctx.clearRect(0,0, canvas.width, canvas.height)
 
-function init(){
-  // init data
-  var json = [
-      {
-        "adjacencies": [
-            "graphnode21", 
-            {
-              "nodeTo": "graphnode1",
-              "nodeFrom": "graphnode0",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode13",
-              "nodeFrom": "graphnode0",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode14",
-              "nodeFrom": "graphnode0",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode15",
-              "nodeFrom": "graphnode0",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode16",
-              "nodeFrom": "graphnode0",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode17",
-              "nodeFrom": "graphnode0",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }
-        ],
-        "data": {
-          "$color": "#83548B",
-          "$dim": 10
-        },
-        "id": "graphnode0",
-        "name": "graphnode0"
-      }, {
-        "adjacencies": [
-            {
-              "nodeTo": "graphnode2",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode4",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode5",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode6",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode7",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode8",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode10",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode11",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode12",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode13",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode14",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode15",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode16",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode17",
-              "nodeFrom": "graphnode1",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }
-        ],
-        "data": {
-          "$color": "#EBB056",
-          "$dim": 10
-        },
-        "id": "graphnode1",
-        "name": "graphnode1"
-      }, {
-        "adjacencies": [
-            {
-              "nodeTo": "graphnode5",
-              "nodeFrom": "graphnode2",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode9",
-              "nodeFrom": "graphnode2",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode18",
-              "nodeFrom": "graphnode2",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }
-        ],
-        "data": {
-          "$color": "#416D9C",
-          "$dim": 10
-        },
-        "id": "graphnode2",
-        "name": "graphnode2"
-      }, {
-        "adjacencies": [
-            {
-              "nodeTo": "graphnode5",
-              "nodeFrom": "graphnode3",
-              "data": {
-                "$color": "#909291"
-              }
-            }, {
-              "nodeTo": "graphnode9",
-              "nodeFrom": "graphnode3",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode10",
-              "nodeFrom": "graphnode3",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode12",
-              "nodeFrom": "graphnode3",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }
-        ],
-        "data": {
-          "$color": "#416D9C",
-          "$dim": 10
-        },
-        "id": "graphnode3",
-        "name": "graphnode3"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#83548B",
-          "$dim": 10
-        },
-        "id": "graphnode4",
-        "name": "graphnode4"
-      }, {
-        "adjacencies": [
-          {
-            "nodeTo": "graphnode9",
-            "nodeFrom": "graphnode5",
-            "data": {
-              "$color": "#909291"
-            }
-          }
-        ],
-        "data": {
-          "$color": "#C74243",
-          "$dim": 10
-        },
-        "id": "graphnode5",
-        "name": "graphnode5"
-      }, {
-        "adjacencies": [
-            {
-              "nodeTo": "graphnode10",
-              "nodeFrom": "graphnode6",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode11",
-              "nodeFrom": "graphnode6",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }
-        ],
-        "data": {
-          "$color": "#83548B",
-          "$dim": 10
-        },
-        "id": "graphnode6",
-        "name": "graphnode6"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#EBB056",
-          "$dim": 10
-        },
-        "id": "graphnode7",
-        "name": "graphnode7"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#C74243",
-          "$dim": 10
-        },
-        "id": "graphnode8",
-        "name": "graphnode8"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#83548B",
-          "$dim": 10
-        },
-        "id": "graphnode9",
-        "name": "graphnode9"
-      }, {
-        "adjacencies": [
-          {
-            "nodeTo": "graphnode11",
-            "nodeFrom": "graphnode10",
-            "data": {
-              "$color": "#909291"
-            }
-          }
-        ],
-        "data": {
-          "$color": "#70A35E",
-          "$dim": 10
-        },
-        "id": "graphnode10",
-        "name": "graphnode10"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#70A35E",
-          "$dim": 10
-        },
-        "id": "graphnode11",
-        "name": "graphnode11"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#83548B",
-          "$dim": 10
-        },
-        "id": "graphnode12",
-        "name": "graphnode12"
-      }, {
-        "adjacencies": [
-          {
-            "nodeTo": "graphnode14",
-            "nodeFrom": "graphnode13",
-            "data": {
-              "$color": "#557EAA"
-            }
-          }
-        ],
-        "data": {
-          "$color": "#EBB056",
-          "$dim": 10
-        },
-        "id": "graphnode13",
-        "name": "graphnode13"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#EBB056",
-          "$dim": 10
-        },
-        "id": "graphnode14",
-        "name": "graphnode14"
-      }, {
-        "adjacencies": [
-            {
-              "nodeTo": "graphnode16",
-              "nodeFrom": "graphnode15",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode17",
-              "nodeFrom": "graphnode15",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }
-        ],
-        "data": {
-          "$color": "#83548B",
-          "$dim": 10
-        },
-        "id": "graphnode15",
-        "name": "graphnode15"
-      }, {
-        "adjacencies": [
-          {
-            "nodeTo": "graphnode17",
-            "nodeFrom": "graphnode16",
-            "data": {
-              "$color": "#557EAA"
-            }
-          }
-        ],
-        "data": {
-          "$color": "#C74243",
-          "$dim": 10
-        },
-        "id": "graphnode16",
-        "name": "graphnode16"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#416D9C",
-          "$dim": 10
-        },
-        "id": "graphnode17",
-        "name": "graphnode17"
-      }, {
-        "adjacencies": [
-            {
-              "nodeTo": "graphnode19",
-              "nodeFrom": "graphnode18",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }, {
-              "nodeTo": "graphnode20",
-              "nodeFrom": "graphnode18",
-              "data": {
-                "$color": "#557EAA"
-              }
-            }
-        ],
-        "data": {
-          "$color": "#EBB056",
-          "$dim": 10
-        },
-        "id": "graphnode18",
-        "name": "graphnode18"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#70A35E",
-          "$dim": 10
-        },
-        "id": "graphnode19",
-        "name": "graphnode19"
-      }, {
-        "adjacencies": [],
-        "data": {
-          "$color": "#C74243",
-          "$dim": 10
-        },
-        "id": "graphnode20",
-        "name": "graphnode20"
+          particleSystem.eachEdge(function(edge, pt1, pt2){
+            // edge: {source:Node, target:Node, length:#, data:{}}
+            // pt1:  {x:#, y:#}  source position in screen coords
+            // pt2:  {x:#, y:#}  target position in screen coords
+
+            // draw a line from pt1 to pt2
+            ctx.strokeStyle = "rgba(0,0,0, .3)"
+            ctx.lineWidth = 1 + 4*edge.data.weight
+            ctx.beginPath()
+            ctx.moveTo(pt1.x, pt1.y)
+            ctx.lineTo(pt2.x, pt2.y)
+            ctx.stroke()
+          })
+
+          particleSystem.eachNode(function(node, pt){
+            // node: {mass:#, p:{x,y}, name:"", data:{}}
+            // pt:   {x:#, y:#}  node position in screen coords
+
+            // draw a circle centered at pt
+            var w = 4
+            ctx.beginPath(); 
+            ctx.fillStyle = "black"
+            ctx.arc(pt.x, pt.y, w, 0, Math.PI*2, true);
+            ctx.closePath();
+            ctx.fill();
+          })    			
+        }
       }
-  ];
-  // end
-  // init ForceDirected
-  var fd = new $jit.ForceDirected({
-    //id of the visualization container
-    injectInto: 'social-graph',
-    //Enable zooming and panning
-    //by scrolling and DnD
-    Navigation: {
-      enable: true,
-      //Enable panning events only if we're dragging the empty
-      //canvas (and not a node).
-      panning: 'avoid nodes',
-      zooming: 10 //zoom speed. higher is more sensible
-    },
-    // Change node and edge styles such as
-    // color and width.
-    // These properties are also set per node
-    // with dollar prefixed data-properties in the
-    // JSON structure.
-    Node: {
-      overridable: true
-    },
-    Edge: {
-      overridable: true,
-      color: '#23A4FF',
-      lineWidth: 0.4
-    },
-    //Native canvas text styling
-    Label: {
-      type: labelType, //Native or HTML
-      size: 10,
-      style: 'bold'
-    },
-    //Add Tips
-    Tips: {
-      enable: true,
-      onShow: function(tip, node) {
-        //count connections
-        var count = 0;
-        node.eachAdjacency(function() { count++; });
-        //display node info in tooltip
-        tip.innerHTML = "<div class=\"tip-title\">" + node.name + "</div>"
-          + "<div class=\"tip-text\"><b>connections:</b> " + count + "</div>";
-      }
-    },
-    // Add node events
-    Events: {
-      enable: true,
-      //Change cursor style when hovering a node
-      onMouseEnter: function() {
-        fd.canvas.getElement().style.cursor = 'move';
-      },
-      onMouseLeave: function() {
-        fd.canvas.getElement().style.cursor = '';
-      },
-      //Update node positions when dragged
-      onDragMove: function(node, eventInfo, e) {
-          var pos = eventInfo.getPos();
-          node.pos.setc(pos.x, pos.y);
-          fd.plot();
-      },
-      //Implement the same handler for touchscreens
-      onTouchMove: function(node, eventInfo, e) {
-        $jit.util.event.stop(e); //stop default touchmove event
-        this.onDragMove(node, eventInfo, e);
-      },
-      //Add also a click handler to nodes
-      onClick: function(node) {
-        if(!node) return;
-        // Build the right column relations list.
-        // This is done by traversing the clicked node connections.
-        var html = "<h4>" + node.name + "</h4><b> connections:</b><ul><li>",
-            list = [];
-        node.eachAdjacency(function(adj){
-          list.push(adj.nodeTo.name);
-        });
-        //append connections information
-        $jit.id('inner-details').innerHTML = html + list.join("</li><li>") + "</li></ul>";
-      }
-    },
-    //Number of iterations for the FD algorithm
-    iterations: 200,
-    //Edge length
-    levelDistance: 130,
-    // Add text to the labels. This method is only triggered
-    // on label creation and only for DOM labels (not native canvas ones).
-    onCreateLabel: function(domElement, node){
-      domElement.innerHTML = node.name;
-      var style = domElement.style;
-      style.fontSize = "0.8em";
-      style.color = "#ddd";
-    },
-    // Change node styles when DOM labels are placed
-    // or moved.
-    onPlaceLabel: function(domElement, node){
-      var style = domElement.style;
-      var left = parseInt(style.left);
-      var top = parseInt(style.top);
-      var w = domElement.offsetWidth;
-      style.left = (left - w / 2) + 'px';
-      style.top = (top + 10) + 'px';
-      style.display = '';
+      return that
     }
-  });
-  // load JSON data.
-  fd.loadJSON(json);
-  // compute positions incrementally and animate.
-  fd.computeIncremental({
-    iter: 40,
-    property: 'end',
-    onStep: function(perc){
-      console.log(perc + '% loaded...');
-    },
-    onComplete: function(){
-      console.log('done');
-      fd.animate({
-        modes: ['linear'],
-        transition: $jit.Trans.Elastic.easeOut,
-        duration: 2500
-      });
-    }
-  });
-  // end
-}
 
-init();
+
+  $(document).ready(function(){
+    var sys = arbor.ParticleSystem(300, 200, 0.4) // create the system with sensible repulsion/stiffness/friction
+    sys.renderer = DeadSimpleRenderer("#social-graph") // our newly created renderer will have its .init() method called shortly by sys...
+
+    /* This isn't going to produce a real power-law graph, but for demonstration purposes hopefully it's close enough. */
+    for(var userId=0; userId < NUM_USERS; userId++) {
+        sys.addNode('user-' + userId);
+    }
+    window.curUser = 0;
+    window.edgeAdd = window.setInterval(function() {
+        if (window.curUser > NUM_USERS) {
+            window.clearInterval(window.edgeAdd);
+            return;
+        } else {
+            window.curUser++;
+        }
+        node = sys.getNode('user-' + window.curUser);
+        numEdges = Math.round(powerlaw(MIN_CONNECTIONS, MAX_CONNECTIONS, 2));
+        curEdges = sys.getEdgesTo(node);
+        console.log(curEdges.length);
+        for(var edge=curEdges.length; edge < numEdges; edge++) {
+            randomNode = sys.getNode('user-' + randRange(1, NUM_USERS-1));
+            sys.addEdge(node, randomNode);
+        }
+    }, 10);
+
+    // for(var userId=0; userId < NUM_USERS; userId++) {
+    //     node = sys.getNode('user-' + userId);
+    //     numEdges = Math.round(powerlaw(MIN_CONNECTIONS, MAX_CONNECTIONS, 2));
+    //     curEdges = sys.getEdgesTo(node);
+    //     console.log(curEdges.length);
+    //     for(var edge=curEdges.length; edge < numEdges; edge++) {
+    //         randomNode = sys.getNode('user-' + randRange(1, NUM_USERS-1));
+    //         sys.addEdge(node, randomNode);
+    //     }
+    // }
+
+    // var animals = sys.addNode('Animals',{'color':'red','shape':'dot','label':'Animals'});
+
+  });
+
+
+})(this.jQuery)
