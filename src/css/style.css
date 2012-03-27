@@ -143,7 +143,12 @@ article[role="main"] h2 {
     background-color: #FFF;
 }
 
+/* Config */
 
+#config label {
+    display: block;
+    padding: 0.5em 0;
+}
 
 
 

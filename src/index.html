@@ -12,6 +12,20 @@
             <h2>An experiment in concepts spreading through a social graph.</h2>
         </header>
         <canvas id="social-graph" width="666" height="500"></canvas>
+        <form action="#" method="POST" id="settings">
+            <fieldset id="console">
+                <input type="submit" value="set up" name="setup" id="setup" />
+                <input type="button" value="play" name="play" id="play" />
+                <input type="button" value="stop" name="stop" id="stop" />
+            </fieldset>
+
+            <fieldset id="config">
+                <label for="start-population">Starting population:</label>
+                <input id="start-population" type="number" value="50" min="0" step="10" />
+                <label for="spread-odds">Odds of spread:</label>
+                <input id="spread-odds" type="number" value="0.1" min="0" max="1" step="0.1" />
+            </fieldset>
+        </form>
     </article>
 
     <script src="js/jquery.min.js"></script>
