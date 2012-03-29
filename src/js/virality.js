@@ -1,6 +1,10 @@
-var NUM_USERS = 20,
+var NUM_USERS = 50,
     MIN_CONNECTIONS = 1,
-    MAX_CONNECTIONS = NUM_USERS * 0.1;
+    MAX_CONNECTIONS = NUM_USERS * 0.02,
+    STICKINESS = 0.95,
+    USER_COLOR = '#3366CC',
+    ACTIVE_USER_COLOR = '#CC6633',
+    PAST_USER_COLOR = '#CCCCCC';
 
 /**
  * I won't pretend to know what this means in detail, borrowed essentially
@@ -20,6 +24,7 @@ function randRange(min, max) {
 
 window.virality = (function($) {
     var users = {},
+        pastUsers = {},
         activeUsers = {},
         sys,
         canvas = $('#social-graph'),
@@ -29,7 +34,7 @@ window.virality = (function($) {
         if (userId in users) {
             return users[userId];
         } else {
-            node = sys.addNode(userId, {"shape": "dot", "color": "#3366CC"});
+            node = sys.addNode(userId, {"shape": "dot", "color": USER_COLOR});
             users[userId] = node;
             return node
         }
@@ -40,8 +45,14 @@ window.virality = (function($) {
     }
 
     function activateUser(user) {
-        user.data['color'] = '#CC6633';
+        sys.tweenNode(user, 0.25, {'color': ACTIVE_USER_COLOR})
         activeUsers[user.name] = user;
+        pastUsers[user.name] = user;
+    }
+
+    function deactivateUser(user) {
+        sys.tweenNode(user, 0.25, {'color': PAST_USER_COLOR})
+        delete activeUsers[user.name];
     }
 
     function setupNetwork() {
@@ -58,26 +69,64 @@ window.virality = (function($) {
                 sys.addEdge(curUser, randomUser());
             }
         }
+        
+        return false;
     }
 
     function startTick() {
-        // Activate one user
-        activateUser(randomUser());
+        // Activate one user to seed the system
+        if (Object.keys(activeUsers).length == 0) {
+            activateUser(randomUser());            
+        }
         
         tickInterval = window.setInterval(tick, 1000);
     }
 
+    function stopTick() {
+        window.clearInterval(tickInterval);
+    }
+
     function tick() {
-        for(activeUser in activeUsers) {
-            if (activeUsers.hasOwnProperty(activeUser)) {
-                var edges = sys.getEdgesFrom(activeUser).concat(sys.getEdgesTo(activeUser));
-                for (var e=0; e < edges.length; e++) {
-                    var edge = edges[e];
-                    activateUser(edge.target);
-                    activateUser(edge.source);
+        for(activeUserId in activeUsers) {
+            if (!activeUsers.hasOwnProperty(activeUserId)) {
+                continue;
+            }
+
+            var activeUser = activeUsers[activeUserId];
+
+            if (Math.random() > STICKINESS) {
+                /* This user lost interest in the product and stopped using it. */
+                deactivateUser(activeUser);
+            } else {
+                /* This user continued to use the product and showed his friends. */
+                var outEdges = sys.getEdgesFrom(activeUser.name),
+                    inEdges = sys.getEdgesTo(activeUser.name);
+
+                for (var e=0; e < outEdges.length; e++) {
+                    var edge = outEdges[e];
+                    if (!pastUsers.hasOwnProperty(edge.target.name)) {
+                        activateUser(edge.target);                            
+                    }
+                }
+                
+                for (var e=0; e < inEdges.length; e++) {
+                    var edge = inEdges[e];
+                    if (!pastUsers.hasOwnProperty(edge.source.name)) {
+                        activateUser(edge.source);
+                    }
                 }
             }
         }
+    }
+
+    function start() {
+        startTick();
+        return false;
+    }
+
+    function stop() {
+        stopTick();
+        return false;
     }
     
     function init() {
@@ -85,7 +134,10 @@ window.virality = (function($) {
         sys.renderer = Renderer(canvas);
         sys.fps(30);
         setupNetwork();
-        startTick();
+
+        $('#play').click(start);
+        $('#stop').click(stop);
+        $('#setup').click(setupNetwork);
     }
     
     return {

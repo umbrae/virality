@@ -14,16 +14,20 @@
         <canvas id="social-graph" width="666" height="500"></canvas>
         <form action="#" method="POST" id="settings">
             <fieldset id="console">
-                <input type="submit" value="set up" name="setup" id="setup" />
-                <input type="button" value="play" name="play" id="play" />
-                <input type="button" value="stop" name="stop" id="stop" />
+                <button name="setup" id="setup">Set Up</button>
+                <button name="play" id="play">Play</button>
+                <button name="stop" id="stop">Stop</button>
             </fieldset>
 
             <fieldset id="config">
                 <label for="start-population">Starting population:</label>
                 <input id="start-population" type="number" value="50" min="0" step="10" />
+
                 <label for="spread-odds">Odds of spread:</label>
-                <input id="spread-odds" type="number" value="0.1" min="0" max="1" step="0.1" />
+                <input id="spread-odds" type="number" value="0.5" min="0" max="1" step="0.1" />
+
+                <label for="stickiness">Stickiness:</label>
+                <input id="stickiness" type="number" value="0.95" min="0" max="1" step="0.01" />
             </fieldset>
         </form>
     </article>
