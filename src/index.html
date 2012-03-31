@@ -11,6 +11,7 @@
             <h1>Virality</h1>
             <h2>An experiment in concepts spreading through a social graph.</h2>
         </header>
+        <span id="tick-counter">0</span>
         <canvas id="social-graph" width="666" height="500"></canvas>
         <form action="#" method="POST" id="settings">
             <fieldset id="console">
@@ -20,17 +21,48 @@
             </fieldset>
 
             <fieldset id="config">
-                <label for="start-population">Starting population:</label>
-                <input id="start-population" type="number" value="50" min="0" step="10" />
+                <div class="config-block">
+                    <label for="population">Network Population:</label>
+                    <input id="population" type="number" value="70" min="1" step="10" />
+                </div>
+                
+                <div class="config-block">
+                    <label for="start-users">Starting Users:</label>
+                    <input id="start-users" type="number" value="2" min="1" step="1" />
+                </div>
 
-                <label for="spread-odds">Odds of spread:</label>
-                <input id="spread-odds" type="number" value="0.5" min="0" max="1" step="0.1" />
+                <div class="config-block">
+                    <label for="connection-factor">Connection factor:</label>
+                    <input id="connection-factor" type="number" value="2" min="0" step="1" />
+                </div>
 
-                <label for="stickiness">Stickiness:</label>
-                <input id="stickiness" type="number" value="0.95" min="0" max="1" step="0.01" />
+                <div class="config-block">
+                    <label for="spread-odds">Odds of spread:</label>
+                    <input id="spread-odds" type="range" value="0.5" min="0" max="1" step="0.01" />
+                    <span class="range-display" data-for="spread-odds" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="stickiness">Stickiness:</label>
+                    <input id="stickiness" type="range" value="0.75" min="0" max="1" step="0.01" />
+                    <span class="range-display" data-for="stickiness" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="tick-speed">Tick Speed (in ms):</label>
+                    <input id="tick-speed" type="number" value="500" min="50" step="50" />
+                </div>
+
+                <div class="config-block">
+                    <label for="design-quality">Design Quality:</label>
+                    <input id="design-quality" type="range" value="0.8" min="0" max="1" step="0.01" />
+                    <span class="range-display" data-for="design-quality" data-percent="1"></span>
+                </div>
+
             </fieldset>
         </form>
     </article>
+    <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 
     <script src="js/jquery.min.js"></script>
     <script src="js/arbor/arbor.js"></script>

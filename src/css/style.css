@@ -143,6 +143,14 @@ article[role="main"] h2 {
     background-color: #FFF;
 }
 
+#tick-counter {
+    position: absolute;
+    font-size: 0.8em;
+    font-weight: bold;
+    color: #AAA;
+    padding: 5px;
+}
+
 /* Config */
 
 #config label {
@@ -150,7 +158,14 @@ article[role="main"] h2 {
     padding: 0.5em 0;
 }
 
+#config {
+    font-size: 0.8em;
+}
 
+#config .config-block {
+    width: 33%;
+    float: left;
+}
 
 
 
