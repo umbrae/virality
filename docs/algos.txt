@@ -1,0 +1,22 @@
+All values should be percentages, or a scale from 1-10 if you prefer conceptually.
+
+Results to generate:
+    • Value - How useful is this concept to an average person?
+    • Stickiness - How likely is a user to keep using this product, once they start?
+    • Virality - How likely is a user to share this with their connections?
+        Virality = 
+    • Understandability - How easy is this concept to understand?
+        Understandability = (1-complexity)*design_quality
+
+Configs to play with:
+    • Cost - Does this concept have a monetary cost to use it?
+    • Market size - What percent of the total network will inherently have interest in the concept, given perfect understandability?
+    • Design Quality - How quality is the design of this concept?
+    • Complexity - How complex is the concept?
+    • Share aggressiveness - How aggressively does the concept attempt to spread to others?
+    • Core Usefulness - Is this something a user inherently needs to use? e.g. "Cat Videos" on the low end, "Banking app" on the high end.
+
+
+Algorithms
+===
+
