@@ -1,22 +1,63 @@
 All values should be percentages, or a scale from 1-10 if you prefer conceptually.
 
 Results to generate:
-    • Value - How useful is this concept to an average person?
-    • Stickiness - How likely is a user to keep using this product, once they start?
     • Virality - How likely is a user to share this with their connections?
-        Virality = 
+        Virality = ((value+share_aggressiveness)/2)*market_size
+    • Value - How satisfied is an average person who consumes this concept?
+        Value = Math.max(0, ((core_usefulness+enjoyment)/2)-(1-understandability)-(share_aggressiveness/4))
+    • Stickiness - How likely is a user to keep using this product, once they start?
+        Stickiness = (value+core_usefulness)/2
     • Understandability - How easy is this concept to understand?
         Understandability = (1-complexity)*design_quality
 
 Configs to play with:
-    • Cost - Does this concept have a monetary cost to use it?
     • Market size - What percent of the total network will inherently have interest in the concept, given perfect understandability?
     • Design Quality - How quality is the design of this concept?
     • Complexity - How complex is the concept?
     • Share aggressiveness - How aggressively does the concept attempt to spread to others?
     • Core Usefulness - Is this something a user inherently needs to use? e.g. "Cat Videos" on the low end, "Banking app" on the high end.
+    • Enjoyment - Does this give the user pleasure?
 
+Configs to ignore for now:
+    • Cost - Does this concept have a monetary cost to use it?
 
 Algorithms
 ===
+
+Virality:
+    share aggressiveness
+    value
+    market size
+
+
+Value:
+    cost
+    core usefulness
+    enjoyment
+    understandability
+
+
+Math.max(0, ((core_usefulness+enjoyment)/2)-(1-understandability))
+
+1
+0
+1
+
+1-0 = 1
+
+0
+1
+.5
+1-.5 = 0.5
+
+0.25
+0.25
+0.5
+
+.25-0.5
+
+
+
+
+
 
