@@ -284,7 +284,7 @@
             // determine the box size and round off the coords if we'll be 
             // drawing a text label (awful alignment jitter otherwise...)
             var label = node.data.label||""
-            var w = ctx.measureText(""+label).width + 10
+            var w = ctx.measureText(""+label).width + 8
             if (!(""+label).match(/^[ \t]*$/)){
               pt.x = Math.floor(pt.x)
               pt.y = Math.floor(pt.y)
@@ -322,7 +322,7 @@
           })    			
 
 
-          ctx.strokeStyle = "#cccccc"
+          ctx.strokeStyle = "rgba(0,0,0,0.15)"
           ctx.lineWidth = 1
           ctx.beginPath()
           particleSystem.eachEdge(function(edge, pt1, pt2){

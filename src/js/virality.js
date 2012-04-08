@@ -15,24 +15,45 @@ function powerlaw(min, max, n) {
 }
 
 function randRange(min, max) {
-    return Math.round(min+(Math.random()*(max-min)));
+    return Math.floor((min-1)+(Math.random()*(max-(min-1))))+1;
 }
+
+/* Create a dumb bell curve using averaging. Bell is in the middle. */
+function bellRange(min, max, steepness) {
+    rands = []
+    for(var i=0; i < steepness; i++) {
+        rands.push(randRange(min, max))
+    }
+
+    return Math.floor(rands.reduce(function(x, y) { return x+y; }, 0) / rands.length);
+}
+
+// testBell = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0,
+//             11:0, 12:0, 13:0, 14:0, 15:0, 16:0, 17:0, 18:0, 19:0, 20:0}
+// for (var k=0; k < 50000; k++) {
+//     r = bellRange(1,20,2);
+//     testBell[r]++;
+// }
+
 
 window.virality = (function($) {
     var users = {},
         pastUsers = {},
         activeUsers = {},
+        cliques = {},
         config = {},
         sys,
         canvas = $('#social-graph'),
         tickCounter = 0,
-        tickInterval;
+        tickInterval,
+        edgeInterval;
 
     function getConfig(configVar) {
         var configVal;
 
         if (!config.hasOwnProperty(configVar)) {
             configVal = $('#' + configVar).val();
+
             if (!isNaN(parseFloat(configVal)) && isFinite(configVal)) {
                 config[configVar] = parseFloat(configVal);
             } else {
@@ -42,6 +63,23 @@ window.virality = (function($) {
         
         return config[configVar];
     }
+
+    function addClique(cliqueId) {
+        if (cliqueId in cliques) {
+            return cliques[cliqueId];
+        } else {
+            cliques[cliqueId] = [];
+        }
+    }
+
+    function addUserToClique(userId, cliqueId) {
+        if (cliques[cliqueId].indexOf(userId) != -1) {
+            return true;
+        } else {
+            cliques[cliqueId].push(userId);
+        }
+    }
+
 
     function addUser(userId) {
         if (userId in users) {
@@ -74,13 +112,16 @@ window.virality = (function($) {
     **/
     function tellUser(sourceUser, targetUser) {
         var interested = Math.random();
+
+        /**
+         * TODO: Should interest vary based on topology model? Cliques are
+         * probably stronger recommendations.
+         **/
         
         if (pastUsers.hasOwnProperty(targetUser.name)) {
             return false;
         }
 
-        console.log(interested);
-        console.log(getConfig('spread-odds'));
         if (interested < getConfig('spread-odds')) {
             return true;
         }
@@ -90,20 +131,80 @@ window.virality = (function($) {
 
     function setupNetwork() {
         /* Create the nodes */
+        var topology = getConfig('topology');
+
+        if (topology == "clique") {
+            setupCliqueNetwork();
+        } else {
+            setupPowerLawNetwork();
+        }
+
+        return false;
+    }
+
+    function setupCliqueNetwork() {
+        /**
+         * Setup a clique-style network. This is useful for word-of-mouth
+         * style networks, where people will tell their friends but not
+         * necessarily the whole world (via twitter or the like).
+         * Connections are small and tight.
+        **/
+        var numCliques = getConfig('population') / 12;
+        for(var cliqueId=0; cliqueId < numCliques; cliqueId++) {
+            addClique(cliqueId);
+        }
+
+        for(var userId=0; userId < getConfig('population'); userId++) {
+            addUser(userId);
+            var numUserCliques = bellRange(1,3,3);
+            for (var i=0; i < numUserCliques; i++) {
+                var cliqueId = randRange(0, numCliques-1);
+                addUserToClique(userId, cliqueId);
+            }
+        }
+
+        for(var cliqueId=0; cliqueId < numCliques; cliqueId++) {
+            var clique = cliques[cliqueId];
+            
+            for (var i=0; i < clique.length; i++) {
+                var fromUserId = clique[i];
+                
+                for (var k=i; k < clique.length; k++) {
+                    var toUserId = clique[k];
+
+                    if (Math.random() > 0.85) {
+                        sys.addEdge(fromUserId, toUserId);                        
+                    }
+                }
+            }
+        }
+    }
+
+    function setupPowerLawNetwork() {
+        /**
+         * Setup a power-law style network. This is useful for twitter or
+         * facebook style networks, where people will tell everyone they know
+         * via their social network. Connections are big and loose.
+        **/
         for(var userId=0; userId < getConfig('population'); userId++) {
             addUser(userId);
         }
-
+        
         /* Add the edges */
-        for(var userId=0; userId < getConfig('population'); userId++) {
+        userId = 0;
+        edgeInterval = window.setInterval(function() {
             curUser = users[userId];
-            numEdges = Math.round(powerlaw(1, getConfig('connection-factor'), 2));
+            numEdges = Math.round(powerlaw(1, getConfig('connection-factor')*3, 2));
             for(var edge=0; edge < numEdges; edge++) {
                 sys.addEdge(curUser, randomUser());
             }
-        }
-        
-        return false;
+            
+            if (userId > getConfig('population')) {
+                window.clearInterval(edgeInterval);
+            } else {
+                userId++;
+            }
+        }, 25);
     }
 
     function startTick() {
@@ -122,6 +223,7 @@ window.virality = (function($) {
 
     function stopTick() {
         window.clearInterval(tickInterval);
+        window.clearInterval(edgeInterval);
     }
 
     function tick() {
@@ -177,6 +279,7 @@ window.virality = (function($) {
     function clear() {
         stop();
         users = {};
+        cliques = {};
         activeUsers = {};
         pastUsers = {};
         config = {};

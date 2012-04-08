@@ -23,12 +23,12 @@
             <fieldset id="config">
                 <div class="config-block">
                     <label for="population">Network Population:</label>
-                    <input id="population" type="number" value="70" min="1" step="10" />
+                    <input id="population" type="number" value="100" min="1" step="10" />
                 </div>
                 
                 <div class="config-block">
                     <label for="start-users">Starting Users:</label>
-                    <input id="start-users" type="number" value="2" min="1" step="1" />
+                    <input id="start-users" type="number" value="1" min="1" step="1" />
                 </div>
 
                 <div class="config-block">
@@ -51,6 +51,14 @@
                 <div class="config-block">
                     <label for="tick-speed">Tick Speed (in ms):</label>
                     <input id="tick-speed" type="number" value="500" min="50" step="50" />
+                </div>
+
+                <div class="config-block">
+                    <label for="topology">Topology model:</label>
+                    <select id="topology">
+                        <option value="powerlaw" selected>Power Law (twitter)</option>
+                        <option value="clique">Clique (word-of-mouth)</option>
+                    </select>
                 </div>
 
                 <div class="config-block">
