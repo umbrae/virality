@@ -190,21 +190,25 @@ window.virality = (function($) {
             addUser(userId);
         }
         
-        /* Add the edges */
+        /**
+         * Add the edges. Use a timeout because it seems to make a cleaner
+         * graph when it has a moment to recombobulate.
+        **/
         userId = 0;
         edgeInterval = window.setInterval(function() {
+            if (userId >= getConfig('population')) {
+                window.clearInterval(edgeInterval);
+                return;
+            }
+
             curUser = users[userId];
             numEdges = Math.round(powerlaw(1, getConfig('connection-factor')*3, 2));
             for(var edge=0; edge < numEdges; edge++) {
                 sys.addEdge(curUser, randomUser());
             }
-            
-            if (userId > getConfig('population')) {
-                window.clearInterval(edgeInterval);
-            } else {
-                userId++;
-            }
-        }, 25);
+
+            userId++;
+        }, 50);
     }
 
     function startTick() {
@@ -309,7 +313,7 @@ window.virality = (function($) {
     }
     
     function init() {
-        sys = arbor.ParticleSystem(2600, 512, 0.5);
+        sys = arbor.ParticleSystem(2600, 100, 0.5);
         sys.renderer = Renderer(canvas);
         setupRanges();
         setupNetwork();
