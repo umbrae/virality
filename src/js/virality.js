@@ -28,6 +28,10 @@ function bellRange(min, max, steepness) {
     return Math.floor(rands.reduce(function(x, y) { return x+y; }, 0) / rands.length);
 }
 
+function clamp(min, max, val) {
+    return Math.max(Math.min(max, val), min);
+}
+
 // testBell = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0,
 //             11:0, 12:0, 13:0, 14:0, 15:0, 16:0, 17:0, 18:0, 19:0, 20:0}
 // for (var k=0; k < 50000; k++) {
@@ -49,19 +53,13 @@ window.virality = (function($) {
         edgeInterval;
 
     function getConfig(configVar) {
-        var configVal;
+        var configVal = $('#' + configVar).val();
 
-        if (!config.hasOwnProperty(configVar)) {
-            configVal = $('#' + configVar).val();
-
-            if (!isNaN(parseFloat(configVal)) && isFinite(configVal)) {
-                config[configVar] = parseFloat(configVal);
-            } else {
-                config[configVar] = configVal;
-            }
+        if (!isNaN(parseFloat(configVal)) && isFinite(configVal)) {
+            return parseFloat(configVal);
+        } else {
+            return configVal;
         }
-        
-        return config[configVar];
     }
 
     function addClique(cliqueId) {
@@ -79,7 +77,6 @@ window.virality = (function($) {
             cliques[cliqueId].push(userId);
         }
     }
-
 
     function addUser(userId) {
         if (userId in users) {
@@ -116,13 +113,12 @@ window.virality = (function($) {
         /**
          * TODO: Should interest vary based on topology model? Cliques are
          * probably stronger recommendations.
-         **/
-        
+        **/
         if (pastUsers.hasOwnProperty(targetUser.name)) {
             return false;
         }
 
-        if (interested < getConfig('spread-odds')) {
+        if (interested < getConfig('virality')) {
             return true;
         }
         
@@ -317,6 +313,21 @@ window.virality = (function($) {
         sys.renderer = Renderer(canvas);
         setupRanges();
         setupNetwork();
+
+        $('#concept-config input').change(function() {
+            var understandability = clamp(0,1,getConfig('designQuality')/getConfig('complexity')),
+                userValue = clamp(0, 1, ((getConfig('coreUsefulness')+getConfig('enjoyment'))/2)-(1-understandability)-(getConfig('shareAggressiveness')/4)),
+                stickiness = clamp(0, 1, (userValue+getConfig('coreUsefulness'))/2),
+                virality = clamp(0, 1, ((userValue+getConfig('shareAggressiveness')*2)/3)*getConfig('marketSize'))
+
+            $('#understandability').val(understandability);
+            $('#userValue').val(userValue);
+            $('#stickiness').val(stickiness);
+            $('#virality').val(virality);
+
+            $('#results input').trigger('change');
+        });
+        $('.config input').trigger('change');
 
         $('#play').click(start);
         $('#stop').click(stop);

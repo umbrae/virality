@@ -20,7 +20,9 @@
                 <button name="stop" id="stop">Stop</button>
             </fieldset>
 
-            <fieldset id="config">
+            <fieldset class="config" id="network-params">
+                <legend>Network Settings</legend>
+
                 <div class="config-block">
                     <label for="population">Network Population:</label>
                     <input id="population" type="number" value="100" min="1" step="10" />
@@ -37,18 +39,6 @@
                 </div>
 
                 <div class="config-block">
-                    <label for="spread-odds">Odds of spread:</label>
-                    <input id="spread-odds" type="range" value="0.5" min="0" max="1" step="0.01" />
-                    <span class="range-display" data-for="spread-odds" data-percent="1"></span>
-                </div>
-
-                <div class="config-block">
-                    <label for="stickiness">Stickiness:</label>
-                    <input id="stickiness" type="range" value="0.75" min="0" max="1" step="0.01" />
-                    <span class="range-display" data-for="stickiness" data-percent="1"></span>
-                </div>
-
-                <div class="config-block">
                     <label for="tick-speed">Tick Speed (in ms):</label>
                     <input id="tick-speed" type="number" value="500" min="50" step="50" />
                 </div>
@@ -60,14 +50,76 @@
                         <option value="clique">Clique (word-of-mouth)</option>
                     </select>
                 </div>
+            </fieldset>
+
+            <fieldset id="concept-config" class="config">
+                <legend>Concept Config</legend>
 
                 <div class="config-block">
-                    <label for="design-quality">Design Quality:</label>
-                    <input id="design-quality" type="range" value="0.8" min="0" max="1" step="0.01" />
-                    <span class="range-display" data-for="design-quality" data-percent="1"></span>
+                    <label for="marketSize" title="What percent of the total network will inherently have interest in the concept, given perfect understandability?">Market Size:</label>
+                    <input id="marketSize" type="range" value="0.75" min="0" max="1" step="0.01" />
+                    <span class="range-display" data-for="marketSize" data-percent="1"></span>
                 </div>
 
+                <div class="config-block">
+                    <label for="complexity" title="How complex is the concept?">Complexity:</label>
+                    <input id="complexity" type="range" value="0.25" min="0.0" max="1.0" step="0.01" />
+                    <span class="range-display" data-for="complexity" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="shareAggressiveness" title="How aggressively does the concept attempt to spread to others?">Share Aggressiveness:</label>
+                    <input id="shareAggressiveness" type="range" value="0.75" min="0" max="1" step="0.01" />
+                    <span class="range-display" data-for="shareAggressiveness" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="coreUsefulness" title="Is this something a user inherently needs to use? e.g. 'Cat Videos' on the low end, 'Banking app' on the high end.">Core Usefulness:</label>
+                    <input id="coreUsefulness" type="range" value="0.75" min="0" max="1" step="0.01" />
+                    <span class="range-display" data-for="coreUsefulness" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="enjoyment" title="Does this give the user pleasure?">Enjoyment:</label>
+                    <input id="enjoyment" type="range" value="0.75" min="0" max="1" step="0.01" />
+                    <span class="range-display" data-for="enjoyment" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="designQuality" title="How quality is the design of this concept?">Design Quality:</label>
+                    <input id="designQuality" type="range" value="0.8" min="0" max="1" step="0.01" />
+                    <span class="range-display" data-for="designQuality" data-percent="1"></span>
+                </div>
+            </fieldset>            
+
+            <fieldset class="config" id="results">
+                <legend>Results</legend>
+
+                <div class="config-block">
+                    <label for="understandability">Understandability:</label>
+                    <input id="understandability" type="range" value="0.5" min="0" max="1" step="0.01" readonly="readonly" />
+                    <span class="range-display" data-for="understandability" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="userValue">User Value:</label>
+                    <input id="userValue" type="range" value="0.5" min="0" max="1" step="0.01" readonly="readonly" />
+                    <span class="range-display" data-for="userValue" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="stickiness">Stickiness:</label>
+                    <input id="stickiness" type="range" value="0.75" min="0" max="1" step="0.01" readonly="readonly" />
+                    <span class="range-display" data-for="stickiness" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="virality">Virality:</label>
+                    <input id="virality" type="range" value="0.5" min="0" max="1" step="0.01" readonly="readonly" />
+                    <span class="range-display" data-for="virality" data-percent="1"></span>
+                </div>
             </fieldset>
+
         </form>
     </article>
     <br /><br /><br /><br /><br /><br /><br /><br /><br /><br />

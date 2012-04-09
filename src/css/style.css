@@ -151,18 +151,22 @@ article[role="main"] h2 {
     padding: 5px;
 }
 
+input[readonly] {
+    opacity: 0.85;
+}
+
 /* Config */
 
-#config label {
+.config label {
     display: block;
     padding: 0.5em 0;
 }
 
-#config {
+.config {
     font-size: 0.8em;
 }
 
-#config .config-block {
+.config .config-block {
     width: 33%;
     float: left;
 }

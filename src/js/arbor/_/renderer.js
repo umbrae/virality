@@ -295,7 +295,7 @@
             // draw a rectangle centered at pt
             if (node.data.color) ctx.fillStyle = node.data.color
             // else ctx.fillStyle = "#d0d0d0"
-            else ctx.fillStyle = "rgba(0,0,0,.2)"
+            else ctx.fillStyle = "rgba(0,0,0,0.5)"
             if (node.data.color=='none') ctx.fillStyle = "white"
 
 
@@ -322,7 +322,7 @@
           })    			
 
 
-          ctx.strokeStyle = "rgba(0,0,0,0.15)"
+          ctx.strokeStyle = "rgba(0,0,0,0.25)"
           ctx.lineWidth = 1
           ctx.beginPath()
           particleSystem.eachEdge(function(edge, pt1, pt2){
