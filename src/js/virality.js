@@ -18,27 +18,31 @@ function randRange(min, max) {
     return Math.floor((min-1)+(Math.random()*(max-(min-1))))+1;
 }
 
-/* Create a dumb bell curve using averaging. Bell is in the middle. */
-function bellRange(min, max, steepness) {
-    rands = []
-    for(var i=0; i < steepness; i++) {
-        rands.push(randRange(min, max))
-    }
-
-    return Math.floor(rands.reduce(function(x, y) { return x+y; }, 0) / rands.length);
+/**
+ * Create a dumb normal distribution using averaging.
+ * Credit: http://www.protonfish.com/random.shtml
+ **/
+function standardNormalDist() {
+	return (Math.random()*2-1)+(Math.random()*2-1)+(Math.random()*2-1);
 }
+
+function normalDist(mean, stdev) {
+    return standardNormalDist()*stdev+mean;
+}
+
+// testBell = {}
+// for (var k=0; k < 50000; k++) {
+//     r = Math.round(normalDist(10,3));
+//     if (r in testBell) {
+//         testBell[r]++;
+//     } else {
+//         testBell[r] = 1;
+//     }
+// }
 
 function clamp(min, max, val) {
     return Math.max(Math.min(max, val), min);
 }
-
-// testBell = {1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0, 8:0, 9:0, 10:0,
-//             11:0, 12:0, 13:0, 14:0, 15:0, 16:0, 17:0, 18:0, 19:0, 20:0}
-// for (var k=0; k < 50000; k++) {
-//     r = bellRange(1,20,2);
-//     testBell[r]++;
-// }
-
 
 window.virality = (function($) {
     var users = {},
@@ -111,14 +115,17 @@ window.virality = (function($) {
         var interested = Math.random();
 
         /**
-         * TODO: Should interest vary based on topology model? Cliques are
-         * probably stronger recommendations.
+         * This user has already seen the concept.
         **/
         if (pastUsers.hasOwnProperty(targetUser.name)) {
             return false;
         }
 
-        if (interested < getConfig('virality')) {
+        /**
+         * Did the source user's pitch convince the new user? Does the new
+         * user see value in the product?
+        **/
+        if (interested < getConfig('userValue')) {
             return true;
         }
         
@@ -152,7 +159,7 @@ window.virality = (function($) {
 
         for(var userId=0; userId < getConfig('population'); userId++) {
             addUser(userId);
-            var numUserCliques = bellRange(1,3,3);
+            var numUserCliques = Math.round(normalDist(2,0.5));
             for (var i=0; i < numUserCliques; i++) {
                 var cliqueId = randRange(0, numCliques-1);
                 addUserToClique(userId, cliqueId);
@@ -242,10 +249,14 @@ window.virality = (function($) {
             var activeUser = activeUsers[activeUserId];
 
             if (Math.random() > getConfig('stickiness')) {
-                /* This user lost interest in the product and stopped using it. */
+                /* User lost interest in the product and stopped using it. */
+                console.log("User " + activeUserId + " lost interest.");
                 deactivateUser(activeUser);
-            } else {
-                /* This user continued to use the product and showed his friends. */
+                continue;
+            }
+
+            if (Math.random() <= getConfig('virality')) {
+                /* User decided to tell their friends about the product. */
                 var outEdges = sys.getEdgesFrom(activeUser.name),
                     inEdges = sys.getEdgesTo(activeUser.name);
 
@@ -255,7 +266,7 @@ window.virality = (function($) {
                         activateUser(edge.target);
                     }
                 }
-                
+
                 for (var e=0; e < inEdges.length; e++) {
                     var edge = inEdges[e];
                     if (tellUser(edge.target, edge.source)) {
@@ -325,7 +336,8 @@ window.virality = (function($) {
             $('#stickiness').val(stickiness);
             $('#virality').val(virality);
 
-            $('#results input').trigger('change');
+            // Trigger the change event so that the percentile displays change.
+            $('#calculations input').trigger('change');
         });
         $('.config input').trigger('change');
 
