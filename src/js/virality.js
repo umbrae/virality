@@ -152,14 +152,14 @@ window.virality = (function($) {
          * necessarily the whole world (via twitter or the like).
          * Connections are small and tight.
         **/
-        var numCliques = getConfig('population') / 12;
+        var numCliques = Math.round(getConfig('population') / 12);
         for(var cliqueId=0; cliqueId < numCliques; cliqueId++) {
             addClique(cliqueId);
         }
 
         for(var userId=0; userId < getConfig('population'); userId++) {
             addUser(userId);
-            var numUserCliques = Math.round(normalDist(2,0.5));
+            var numUserCliques = Math.round(normalDist(getConfig('connection-factor'),0.5));
             for (var i=0; i < numUserCliques; i++) {
                 var cliqueId = randRange(0, numCliques-1);
                 addUserToClique(userId, cliqueId);
