@@ -326,15 +326,49 @@ window.virality = (function($) {
         setupNetwork();
 
         $('#concept-config input').change(function() {
-            var understandability = clamp(0,1,getConfig('designQuality')/getConfig('complexity')),
-                userValue = clamp(0, 1, ((getConfig('coreUsefulness')+getConfig('enjoyment'))/2)-(1-understandability)-(getConfig('shareAggressiveness')/4)),
-                stickiness = clamp(0, 1, (userValue+getConfig('coreUsefulness'))/2),
-                virality = clamp(0, 1, ((userValue+getConfig('shareAggressiveness')*2)/3)*getConfig('marketSize'))
+            var understandability, userValue, stickiness, satisfaction, complexity;
+
+            // If an app is "sufficiently well designed" to overcome its
+            // complexity, the understandability is 1. Otherwise,
+            // it degrades.
+            understandability = clamp(0,1,getConfig('designQuality')/getConfig('complexity'));
+
+            // First, determine the average satisfaction - mean of usefulness/enjoyment
+            userValue = (getConfig('coreUsefulness')+getConfig('enjoyment'))/2
+
+            // Then, penalize for any lack of understandability
+            userValue -= (1-understandability)
+
+            // Then, penalize a bit for too aggressive sharing, which is
+            // annoying. This is definitely my editorializing and is a 
+            // judgment call.
+            userValue -= (getConfig('shareAggressiveness')/6);
+
+            // Is this app satisfyingly complex to use? Too-simple
+            // apps are not satisfying, and too-complicated apps are not
+            // satisfying. This plays a big role in stickiness.
+            satisfaction = (Math.sin(Math.PI*getConfig('complexity')*1.25))*0.8 + ((getConfig('enjoyment')+getConfig('designQuality'))/8);
+            
+            // Add a modifier for decently complex systems. If they aren't
+            // complex, they don't provide much value. If they're too complex,
+            // they don't provide much value. If they're just the right amount
+            // of complex, they can be valuable.
+            // To visualize, in Grapher: y=|_frac_{{sin({π*({x})*1.25})};{3}}
+            userValue += satisfaction / 3;
+            userValue = clamp(0,1, userValue)
+
+            // Something can be high value but not sticky, like a youtube
+            // video.
+            stickiness = clamp(0, 1, (satisfaction+userValue+getConfig('coreUsefulness'))/3);
+
+
+            virality = clamp(0, 1, ((userValue+getConfig('shareAggressiveness')*2)/3)*getConfig('marketSize'));
 
             $('#understandability').val(understandability);
             $('#userValue').val(userValue);
             $('#stickiness').val(stickiness);
             $('#virality').val(virality);
+            $('#satisfaction').val(satisfaction);
 
             // Trigger the change event so that the percentile displays change.
             $('#calculations input').trigger('change');

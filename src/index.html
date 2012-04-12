@@ -30,12 +30,12 @@
                 
                 <div class="config-block">
                     <label for="start-users">Starting Users:</label>
-                    <input id="start-users" type="number" value="2" min="1" step="1" />
+                    <input id="start-users" type="number" value="3" min="1" step="1" />
                 </div>
 
                 <div class="config-block">
                     <label for="connection-factor">Connection factor:</label>
-                    <input id="connection-factor" type="number" value="2" min="0" step="1" />
+                    <input id="connection-factor" type="number" value="3" min="0" step="1" />
                 </div>
 
                 <div class="config-block">
@@ -47,7 +47,7 @@
                     <label for="topology">Topology model:</label>
                     <select id="topology">
                         <option value="powerlaw">Power Law (twitter)</option>
-                        <option value="clique"  selected>Clique (word-of-mouth)</option>
+                        <option value="clique">Clique (word-of-mouth)</option>
                     </select>
                 </div>
             </fieldset>
@@ -57,7 +57,7 @@
 
                 <div class="config-block">
                     <label for="marketSize" title="What percent of the total network will inherently have interest in the concept, given perfect understandability?">Market Size:</label>
-                    <input id="marketSize" type="range" value="0.75" min="0" max="1" step="0.01" />
+                    <input id="marketSize" type="range" value="0.5" min="0" max="1" step="0.01" />
                     <span class="range-display" data-for="marketSize" data-percent="1"></span>
                 </div>
 
@@ -69,7 +69,7 @@
 
                 <div class="config-block">
                     <label for="shareAggressiveness" title="How aggressively does the concept attempt to spread to others?">Share Aggressiveness:</label>
-                    <input id="shareAggressiveness" type="range" value="0.75" min="0" max="1" step="0.01" />
+                    <input id="shareAggressiveness" type="range" value="0.5" min="0" max="1" step="0.01" />
                     <span class="range-display" data-for="shareAggressiveness" data-percent="1"></span>
                 </div>
 
@@ -81,7 +81,7 @@
 
                 <div class="config-block">
                     <label for="enjoyment" title="Does this give the user pleasure?">Enjoyment:</label>
-                    <input id="enjoyment" type="range" value="0.75" min="0" max="1" step="0.01" />
+                    <input id="enjoyment" type="range" value="0.5" min="0" max="1" step="0.01" />
                     <span class="range-display" data-for="enjoyment" data-percent="1"></span>
                 </div>
 
@@ -105,6 +105,12 @@
                     <label for="userValue">User Value:</label>
                     <input id="userValue" type="range" value="0.5" min="0" max="1" step="0.01" readonly="readonly" />
                     <span class="range-display" data-for="userValue" data-percent="1"></span>
+                </div>
+
+                <div class="config-block">
+                    <label for="satisfaction">Satisfaction:</label>
+                    <input id="satisfaction" type="range" value="0.75" min="0" max="1" step="0.01" readonly="readonly" />
+                    <span class="range-display" data-for="satisfaction" data-percent="1"></span>
                 </div>
 
                 <div class="config-block">
