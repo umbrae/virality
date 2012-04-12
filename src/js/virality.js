@@ -211,7 +211,7 @@ window.virality = (function($) {
             }
 
             userId++;
-        }, 50);
+        }, 25);
     }
 
     function startTick() {
