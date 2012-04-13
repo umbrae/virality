@@ -40,7 +40,7 @@
 
                 <div class="config-block">
                     <label for="tick-speed">Tick Speed (in ms):</label>
-                    <input id="tick-speed" type="number" value="500" min="50" step="50" />
+                    <input id="tick-speed" type="number" value="1000" min="50" step="50" />
                 </div>
 
                 <div class="config-block">
@@ -93,8 +93,13 @@
             </fieldset>            
 
             <fieldset class="config" id="calculations">
-                <legend>Calculations</legend>
-
+                <legend>Calculations
+                    <label class="manual">
+                        Manual Mode
+                        <input type="checkbox" id="manual-mode" />
+                    </label>
+                </legend>
+    
                 <div class="config-block">
                     <label for="understandability">Understandability:</label>
                     <input id="understandability" type="range" value="0.5" min="0" max="1" step="0.01" readonly="readonly" />

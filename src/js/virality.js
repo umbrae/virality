@@ -250,7 +250,6 @@ window.virality = (function($) {
 
             if (Math.random() > getConfig('stickiness')) {
                 /* User lost interest in the product and stopped using it. */
-                console.log("User " + activeUserId + " lost interest.");
                 deactivateUser(activeUser);
                 continue;
             }
@@ -318,6 +317,16 @@ window.virality = (function($) {
             $range.trigger('change');
         });
     }
+
+    function manualChange() {
+        if($('#manual-mode').is(':checked')) {
+            $('#calculations input').removeAttr('readonly');
+        } else {
+            $('#calculations input').attr('readonly', 'readonly');
+        }
+        
+        return false;
+    }
     
     function init() {
         sys = arbor.ParticleSystem(2600, 100, 0.5);
@@ -374,7 +383,8 @@ window.virality = (function($) {
             $('#calculations input').trigger('change');
         });
         $('.config input').trigger('change');
-
+        
+        $('#manual-mode').change(manualChange);
         $('#play').click(start);
         $('#stop').click(stop);
         $('#setup').click(clear);
