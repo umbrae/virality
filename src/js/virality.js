@@ -159,7 +159,7 @@ window.virality = (function($) {
 
         for(var userId=0; userId < getConfig('population'); userId++) {
             addUser(userId);
-            var numUserCliques = Math.round(normalDist(getConfig('connection-factor'),0.5));
+            var numUserCliques = Math.round(normalDist(getConfig('connectionFactor'),0.5));
             for (var i=0; i < numUserCliques; i++) {
                 var cliqueId = randRange(0, numCliques-1);
                 addUserToClique(userId, cliqueId);
@@ -205,7 +205,7 @@ window.virality = (function($) {
             }
 
             curUser = users[userId];
-            numEdges = Math.round(powerlaw(1, getConfig('connection-factor')*3, 2));
+            numEdges = Math.round(powerlaw(1, getConfig('connectionFactor')*3, 2));
             for(var edge=0; edge < numEdges; edge++) {
                 sys.addEdge(curUser, randomUser());
             }
@@ -219,13 +219,13 @@ window.virality = (function($) {
 
         // Seed the system if we have no active users yet
         if (Object.keys(activeUsers).length == 0) {
-            for(var i=0; i < getConfig('start-users'); i++) {
+            for(var i=0; i < getConfig('startUsers'); i++) {
                 activateUser(randomUser());
             }
         }
         
         window.clearInterval(tickInterval);
-        tickInterval = window.setInterval(tick, getConfig('tick-speed'));
+        tickInterval = window.setInterval(tick, getConfig('tickSpeed'));
     }
 
     function stopTick() {
@@ -327,6 +327,30 @@ window.virality = (function($) {
         
         return false;
     }
+
+    function showConfig() {
+        var configJSON, config = {};
+        $('.config-block input, .config-block select').each(function () {
+            config[$(this).attr('id')] = $(this).val();
+        })
+        
+        configJSON = JSON.stringify(config, null, '    ');
+        $('#config-store-value').val(configJSON).show();
+        return false;
+    }
+
+    function loadConfig() {
+        var config = JSON.parse($('#config-store-value').val()),
+            keys = Object.keys(config);
+
+        for(i=0, il=keys.length; i < il; i++) {
+            key = keys[i];
+            $('#' + key).val(config[key]);
+        }
+        $('.config input').trigger('change');
+        
+        return false;
+    }
     
     function init() {
         sys = arbor.ParticleSystem(2600, 100, 0.5);
@@ -388,6 +412,8 @@ window.virality = (function($) {
         $('#play').click(start);
         $('#stop').click(stop);
         $('#setup').click(clear);
+        $('#config-show').click(showConfig);
+        $('#config-load').click(loadConfig);
     }
     
     return {

@@ -18,7 +18,14 @@
                 <button name="setup" id="setup">Set Up</button>
                 <button name="play" id="play">Play</button>
                 <button name="stop" id="stop">Stop</button>
+                
+                <div class="config-store">
+                    <button name="config-show" id="config-show">Show Config</button>
+                    <button name="config-load" id="config-load">Load Config</button>
+                </div>
             </fieldset>
+
+            <textarea id="config-store-value" style="display: none"></textarea>
 
             <fieldset class="config" id="network-params">
                 <legend>Network Settings</legend>
@@ -29,18 +36,18 @@
                 </div>
                 
                 <div class="config-block">
-                    <label for="start-users">Starting Users:</label>
-                    <input id="start-users" type="number" value="3" min="1" step="1" />
+                    <label for="startUsers">Starting Users:</label>
+                    <input id="startUsers" type="number" value="3" min="1" step="1" />
                 </div>
 
                 <div class="config-block">
-                    <label for="connection-factor">Connection factor:</label>
-                    <input id="connection-factor" type="number" value="3" min="0" step="1" />
+                    <label for="connectionFactor">Connection factor:</label>
+                    <input id="connectionFactor" type="number" value="3" min="0" step="1" />
                 </div>
 
                 <div class="config-block">
-                    <label for="tick-speed">Tick Speed (in ms):</label>
-                    <input id="tick-speed" type="number" value="1000" min="50" step="50" />
+                    <label for="tickSpeed">Tick Speed (in ms):</label>
+                    <input id="tickSpeed" type="number" value="1000" min="50" step="50" />
                 </div>
 
                 <div class="config-block">
