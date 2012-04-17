@@ -330,7 +330,7 @@ window.virality = (function($) {
 
     function showConfig() {
         var configJSON, config = {};
-        $('.config-block input, .config-block select').each(function () {
+        $('#network-params input, #network-params select, #concept-config input, #concept-config select,').each(function () {
             config[$(this).attr('id')] = $(this).val();
         })
         
